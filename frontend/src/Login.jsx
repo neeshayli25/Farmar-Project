@@ -9,7 +9,7 @@ const Login = () => {
     e.preventDefault();
     if (!email || !password) {
       setError('Please fill in all fields');
-      setTimeout(() => setError(''), 3000); // clear error after 3s
+      setTimeout(() => setError(''), 3000);
       return;
     }
     setError('');
@@ -17,58 +17,142 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-green-100 relative px-4">
-      {/* Form Container */}
-      <div className="bg-green-900/60 text-white rounded-xl p-8 shadow-xl w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center mb-6">Welcome to Farm Connect</h1>
+    <div style={styles.wrapper}>
+      {/* Internal CSS for animations */}
+      <style>
+        {`
+          @keyframes bounce {
+            0%, 100% {
+              transform: translateY(0);
+            }
+            50% {
+              transform: translateY(-10px);
+            }
+          }
+        `}
+      </style>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <div style={styles.formContainer}>
+        <h1 style={styles.title}>Welcome to Farm Connect</h1>
+
+        <form onSubmit={handleSubmit} style={styles.form}>
           <div>
-            <label htmlFor="email" className="block mb-1 font-semibold">Email</label>
+            <label htmlFor="email" style={styles.label}>Email</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 rounded-md text-black border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-300"
               placeholder="Enter your email"
+              style={styles.input}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block mb-1 font-semibold">Password</label>
+            <label htmlFor="password" style={styles.label}>Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 rounded-md text-black border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-300"
               placeholder="Enter your password"
+              style={styles.input}
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-green-600 py-3 rounded-md font-semibold hover:border hover:border-sky-400 transition-all"
-          >
+          <button type="submit" style={styles.button}>
             Log In
           </button>
 
-          <p className="text-center text-sm mt-4">
+          <p style={styles.footerText}>
             Don't have an account?{' '}
-            <span className="text-blue-300 hover:underline cursor-pointer">Sign up</span>
+            <span style={styles.signupLink}>Sign up</span>
           </p>
         </form>
       </div>
 
-      {/* Error Popup */}
       {error && (
-        <div className="absolute bottom-6 bg-red-500 text-white py-2 px-6 rounded-full shadow-lg animate-bounce">
+        <div style={{ ...styles.errorPopup, animation: 'bounce 1s infinite' }}>
           {error}
         </div>
       )}
     </div>
   );
+};
+
+const styles = {
+  wrapper: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#d1fae5',
+    position: 'relative',
+    padding: '1rem',
+  },
+  formContainer: {
+    backgroundColor: 'rgba(20, 83, 45, 0.6)',
+    color: 'white',
+    borderRadius: '1rem',
+    padding: '2rem',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+    width: '100%',
+    maxWidth: '400px',
+  },
+  title: {
+    fontSize: '1.875rem',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: '1.5rem',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  label: {
+    marginBottom: '0.25rem',
+    fontWeight: '600',
+    display: 'block',
+  },
+  input: {
+    width: '100%',
+    padding: '0.75rem',
+    borderRadius: '0.5rem',
+    border: '1px solid #ccc',
+    outline: 'none',
+    fontSize: '1rem',
+  },
+  button: {
+    width: '100%',
+    backgroundColor: '#16a34a',
+    color: 'white',
+    padding: '0.75rem',
+    borderRadius: '0.5rem',
+    fontWeight: '600',
+    border: 'none',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+  },
+  footerText: {
+    textAlign: 'center',
+    fontSize: '0.875rem',
+    marginTop: '1rem',
+  },
+  signupLink: {
+    color: '#93c5fd',
+    cursor: 'pointer',
+    textDecoration: 'underline',
+  },
+  errorPopup: {
+    position: 'absolute',
+    bottom: '1.5rem',
+    backgroundColor: '#ef4444',
+    color: 'white',
+    padding: '0.5rem 1.5rem',
+    borderRadius: '9999px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+  },
 };
 
 export default Login;
