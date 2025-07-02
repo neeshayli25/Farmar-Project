@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './Login';
 import Dashboard from './Dashboard';
 import Home from './Home'; // import the new HomePage
+import Farmer from './Farmer';
 
 function App() {
   return (
@@ -14,6 +15,8 @@ function App() {
         <Route path="/buyer" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/farmer" element={<Farmer />} />
+        
       </Routes>
     </BrowserRouter>
   );
