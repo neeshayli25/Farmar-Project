@@ -3,7 +3,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { FaTrash, FaUserCircle, FaSearch, FaPlus } from 'react-icons/fa';
 
-const Farmer= () => {
+const Farmer = () => {
   const [crops, setCrops] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
@@ -18,6 +18,7 @@ const Farmer= () => {
     fetchCrops();
   }, []);
 
+  // Fetch crops from backend
   const fetchCrops = async () => {
     try {
       const res = await axios.get('/api/crops');
@@ -27,28 +28,41 @@ const Farmer= () => {
     }
   };
 
+  // Delete crop by ID, update state immediately
   const handleDelete = async (id) => {
     try {
       await axios.delete(`/api/crops/${id}`);
-      fetchCrops();
+      setCrops(prev => prev.filter(crop => crop.id !== id));
     } catch (err) {
       console.error(err);
     }
   };
 
-  const handleAddCrop = async (e) => {
+  // Add new crop and update state immediately
+  const handleAddCrop = (e) => {
     e.preventDefault();
-    try {
-      await axios.post('/api/crops', newCrop);
-      setShowForm(false);
-      setNewCrop({ name: '', image: '', price: '', quantity: '' });
-      fetchCrops();
-    } catch (err) {
-      console.error(err);
+  
+    if (!newCrop.name || !newCrop.image || !newCrop.price || !newCrop.quantity) {
+      alert("Please fill all fields");
+      return;
     }
+  
+    // Create a temporary crop with a unique id (using timestamp)
+    const tempCrop = {
+      id: Date.now(), // temporary unique id
+      ...newCrop
+    };
+  
+    // Update crops state immediately
+    setCrops(prev => [...prev, tempCrop]);
+  
+    // Reset form and hide modal
+    setNewCrop({ name: '', image: '', price: '', quantity: '' });
+    setShowForm(false);
   };
 
-  const filteredCrops = crops.filter((crop) =>
+  // Filter crops by search query (case-insensitive)
+  const filteredCrops = crops.filter(crop =>
     crop.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -88,21 +102,31 @@ const Farmer= () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        {filteredCrops.map((crop) => (
-          <motion.div
-            key={crop.id}
-            style={styles.card}
-            whileHover={{ scale: 1.05 }}
-          >
-            <img src={crop.image} alt={crop.name} style={styles.image} />
-            <h3>{crop.name}</h3>
-            <p><strong>Price:</strong> {crop.price}</p>
-            <p><strong>Quantity:</strong> {crop.quantity}</p>
-            <button style={styles.deleteButton} onClick={() => handleDelete(crop.id)}>
-              <FaTrash /> Delete
-            </button>
-          </motion.div>
-        ))}
+        {filteredCrops.length === 0 ? (
+          <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#555' }}>
+            No crops found.
+          </p>
+        ) : (
+          filteredCrops.map((crop) => (
+            <motion.div
+              key={crop.id}
+              style={styles.card}
+              whileHover={{ scale: 1.05 }}
+              layout
+            >
+              <img src={crop.image} alt={crop.name} style={styles.image} />
+              <h3>{crop.name}</h3>
+              <p><strong>Price:</strong> {crop.price}</p>
+              <p><strong>Quantity:</strong> {crop.quantity}</p>
+              <button
+                style={styles.deleteButton}
+                onClick={() => handleDelete(crop.id)}
+              >
+                <FaTrash /> Delete
+              </button>
+            </motion.div>
+          ))
+        )}
       </motion.div>
 
       {/* Add Crop Modal */}
@@ -110,8 +134,9 @@ const Farmer= () => {
         <div style={styles.modalOverlay}>
           <motion.div
             style={styles.modal}
-            initial={{ y: "-100vh" }}
-            animate={{ y: 0 }}
+            initial={{ y: "-100vh", opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 80 }}
           >
             <h2>Add New Crop</h2>
             <form onSubmit={handleAddCrop} style={styles.form}>
@@ -145,7 +170,14 @@ const Farmer= () => {
               />
               <div style={styles.formButtons}>
                 <button type="submit" style={styles.saveButton}>Save</button>
-                <button onClick={() => setShowForm(false)} style={styles.cancelButton}>Cancel</button>
+                {/* Cancel button should NOT submit form */}
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  style={styles.cancelButton}
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </motion.div>
